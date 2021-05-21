@@ -103,6 +103,10 @@ public class BattleScript : MonoBehaviourPun
             if (isAttacker)
             {
                 _damageAmount *= getDamageCoefficient_Attacker;
+                if(_damageAmount > 1000)
+                {
+                    _damageAmount = 400f;
+                }
             }
             else if (isDefender)
             {
