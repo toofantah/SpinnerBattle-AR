@@ -18,7 +18,7 @@ public class SpawnManager : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        
+        PhotonNetwork.NetworkingClient.EventReceived += OnEvent; 
     }
 
     // Update is called once per frame
@@ -27,7 +27,28 @@ public class SpawnManager : MonoBehaviourPunCallbacks
         
     }
 
+    private void OnDestroy()
+    {
+        PhotonNetwork.NetworkingClient.EventReceived -= OnEvent;
+    }
+
     #region Photon callback methods
+
+    void OnEvent(EventData photonEvent)
+    {
+        if(photonEvent.Code == (byte)RaiseEventCodes.PlayerSpawnEventCode)
+        {
+            
+            object[] data = (object[])photonEvent.CustomData;                            // how we can get a data sent by the event
+            Vector3 receievedPosition = (Vector3)data[0];
+            Quaternion receivedRotation = (Quaternion)data[1];
+            int receivedPlayerSelectionData = (int)data[3];
+
+            GameObject player = Instantiate(playerPrefabs[receivedPlayerSelectionData], receievedPosition+ battleArenaGameObject.transform.position, receivedRotation);
+            PhotonView _photonView = player.GetComponent<PhotonView>();
+            _photonView.ViewID = (int)data[2];
+        }
+    }
     public override void OnJoinedRoom()
     {
         if (PhotonNetwork.IsConnectedAndReady)
