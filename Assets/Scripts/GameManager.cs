@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     void Start()
     {
         UI_InformPanelGameObject.SetActive(true);
-        uI_InformText.text = "Search For Games to BATTLE!";
+       
     }
 
     // Update is called once per frame
