@@ -65,6 +65,23 @@ public class BattleScript : MonoBehaviourPun
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            if (photonView.IsMine)
+            {
+                Vector3 effectPosition = (gameObject.transform.position + collision.transform.position) / 2 + new Vector3(0, 0.05f, 0);
+
+                //Instantiate Collision Effect ParticleSystem
+                GameObject collisionEffectGameobject = GetPooledObject();
+                if (collisionEffectGameobject != null)
+                {
+                    collisionEffectGameobject.transform.position = effectPosition;
+                    collisionEffectGameobject.SetActive(true);
+                    collisionEffectGameobject.GetComponentInChildren<ParticleSystem>().Play();
+
+                    //De-activate Collision Effect Particle System after some seconds.
+                    StartCoroutine(DeactivateAfterSeconds(collisionEffectGameobject, 0.5f));
+
+                }
+            }
             //comparing the speeds of Spinner Tops
             float mySpeed = gameObject.GetComponent<Rigidbody>().velocity.magnitude;
             float otherPlayerSpeed = collision.collider.gameObject.GetComponent<Rigidbody>().velocity.magnitude;
@@ -197,16 +214,54 @@ public class BattleScript : MonoBehaviourPun
 
     }
 
+
+
+
+    public List<GameObject> pooledObjects;
+    public int amountToPool = 8;
+    public GameObject CollisionEffectPrefab;
+    // Start is called before the first frame update
     void Start()
     {
         CheckPlayerType();
 
         rb = GetComponent<Rigidbody>();
+
+
+        if (photonView.IsMine)
+        {
+            pooledObjects = new List<GameObject>();
+            for (int i = 0; i < amountToPool; i++)
+            {
+                GameObject obj = (GameObject)Instantiate(CollisionEffectPrefab, Vector3.zero, Quaternion.identity);
+                obj.SetActive(false);
+                pooledObjects.Add(obj);
+            }
+        }
+
+
+
     }
 
-    // Update is called once per frame
-    void Update()
+    public GameObject GetPooledObject()
     {
-        
+
+        for (int i = 0; i < pooledObjects.Count; i++)
+        {
+
+            if (!pooledObjects[i].activeInHierarchy)
+            {
+                return pooledObjects[i];
+            }
+        }
+
+        return null;
+    }
+
+    IEnumerator DeactivateAfterSeconds(GameObject _gameObject, float _seconds)
+    {
+        yield return new WaitForSeconds(_seconds);
+        _gameObject.SetActive(false);
+
     }
 }

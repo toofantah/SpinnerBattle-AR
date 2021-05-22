@@ -562,6 +562,9 @@ MonoBehaviour:
   getDamageCoefficient_Defender: 0.2
   spinSpeedBar_Image: {fileID: 4663518798249398227}
   SpinSpeedRatio_Text: {fileID: 6403045122420741532}
+  pooledObjects: []
+  amountToPool: 8
+  CollisionEffectPrefab: {fileID: 2219976250570092787, guid: 5137643b3ee47464683aaeed745c7403, type: 3}
 --- !u!1 &4663518798063194202
 GameObject:
   m_ObjectHideFlags: 0
